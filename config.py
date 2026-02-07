@@ -2,6 +2,8 @@
 # Audio format
 # =========================
 import json
+from .handlers.web import open_url
+from .handlers.apps import open_notepad
 
 SAMPLE_RATE = 16_000  # Hz
 CHANNELS = 1  # mono
@@ -44,12 +46,11 @@ WHISPER_MODEL = "base"
 
 GRAMMAR = json.dumps([
     "открой гугл почту",
-    "открой gmail",
+    "открой майл ру",
     "открой ютуб",
-    "открой youtube",
     "открой календарь",
-    "найди *",          # звездочка работает ограниченно; чаще делают NLU после
-    "открой *"
+    "открой блокнот",
+    "открой лит код"
 ],
     ensure_ascii=False
 )

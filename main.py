@@ -10,8 +10,11 @@ import webrtcvad
 
 from vosk import Model, KaldiRecognizer, SetLogLevel
 
+from CommandProcessor.CommandDispatcher import CommandDispatcher
 from RingBuffer import RingBuffer
 from SpeechDetector import SpeechDetector
+
+command_processor = CommandDispatcher()
 
 SetLogLevel(-1)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -23,8 +26,8 @@ transcribe_queue = queue.Queue(maxsize=cfg.QUEUE_MAXSIZE)
 
 save_event = threading.Event()
 
-vosk_model = Model("vosk-model-small-ru-0.4")
-rec = KaldiRecognizer(vosk_model, cfg.SAMPLE_RATE, cfg.GRAMMAR)
+vosk_model = Model("vosk-model-small-ru-0.22")
+rec_full = KaldiRecognizer(vosk_model, cfg.SAMPLE_RATE, command_processor.grammar_json)
 
 vad = webrtcvad.Vad(cfg.VAD_MODE)
 ring = RingBuffer(size=cfg.BUF_SAMPLES)
@@ -39,17 +42,15 @@ speech_detector = SpeechDetector(
 def transcribe_worker():
     while True:
         audio_i16 = transcribe_queue.get()
-
         try:
+            rec_full.Reset()
+            rec_full.AcceptWaveform(audio_i16.tobytes())
+            res = json.loads(rec_full.FinalResult())
 
-            ok = rec.AcceptWaveform(audio_i16.tobytes())
+            print(res)
+            text = (res.get("text") or "").strip()
+            command_processor.dispatch(text)
 
-            if ok:
-                text = (json.loads(rec.Result()).get("text") or "").strip()
-            else:
-                text = (json.loads(rec.FinalResult()).get("text") or "").strip()
-
-            log.info("%s", text)
         except Exception:
             log.exception("ASR failed")
         finally:
