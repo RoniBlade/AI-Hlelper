@@ -2,8 +2,6 @@
 # Audio format
 # =========================
 import json
-from .handlers.web import open_url
-from .handlers.apps import open_notepad
 
 SAMPLE_RATE = 16_000  # Hz
 CHANNELS = 1  # mono

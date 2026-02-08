@@ -135,3 +135,5 @@ python main.py
 
 **3) Очень медленно**  
 Whisper “base” может быть тяжёлым на CPU. Попробуйте меньшую модель (например, `tiny`) или используйте GPU (если доступно).
+
+pyinstaller --noconsole --onefile --add-data "C:\\Users\\Adam\\Documents\\Work\\LarbCorp\\NeuroCorp\\AI-Assistant\\model\\vosk-model-small-ru-0.22;model/vosk-model-small-ru-0.22" --add-data "C:\\Users\\Adam\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\vosk\\libvosk.dll;vosk" --add-data "C:\\Users\\Adam\\Documents\\Work\\LarbCorp\\NeuroCorp\\AI-Assistant\\icon.ico;." main.py
