@@ -13,6 +13,12 @@ def _run(cmd: Sequence[str]) -> None:
         log.exception("Failed to run: %r", cmd)
         raise
 
+def open_telegram() -> None:
+    """
+    Открыть телеграмм
+    """
+    _run(["C:\\Users\\Adam\\AppData\\Roaming\\Telegram Desktop\\Telegram.exe"])
+
 
 def open_notepad() -> None:
     """
@@ -23,7 +29,6 @@ def open_notepad() -> None:
     elif sys.platform == "darwin":
         _run(["open", "-a", "TextEdit"])
     else:
-        # На Linux у всех по-разному, пробуем популярные варианты:
         for candidate in (["gedit"], ["kate"], ["nano"], ["xdg-open", "/tmp"]):
             try:
                 _run(candidate)

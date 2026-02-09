@@ -4,7 +4,7 @@ import re
 from typing import Any, Callable
 
 from command_processor.handlers.web import open_url
-from command_processor.handlers.apps import open_notepad
+from command_processor.handlers.apps import open_notepad, open_telegram
 
 
 def norm(text: str) -> str:
@@ -22,6 +22,8 @@ class CommandDispatcher:
         self.register(["открой календарь"], open_url, url="https://calendar.google.com/")
         self.register(["открой блокнот"], open_notepad)
         self.register(["открой лит код"], open_url, url="https://leetcode.com/")
+        self.register(["открой телеграм"], open_telegram)
+
 
         self.grammar_json: str = json.dumps(list(self._routes.keys()), ensure_ascii=False)
 
