@@ -1,11 +1,24 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from pathlib import Path
+from vosk import __file__ as vosk_init_file
+
+
+project_root = Path(SPECPATH)
+model_dir = project_root / "model" / "vosk-model-small-ru-0.22"
+icon_file = project_root / "assets" / "icon.ico"
+vosk_dll = Path(vosk_init_file).resolve().parent / "libvosk.dll"
+
 
 a = Analysis(
-    ['main.py'],
-    pathex=[],
+    ["main.py"],
+    pathex=[str(project_root)],
     binaries=[],
-    datas=[('C:\\\\Users\\\\Adam\\\\Documents\\\\Work\\\\LarbCorp\\\\NeuroCorp\\\\AI-Assistant\\\\model\\\\vosk-model-small-ru-0.22', 'model/vosk-model-small-ru-0.22'), ('C:\\\\Users\\\\Adam\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python312\\\\Lib\\\\site-packages\\\\vosk\\\\libvosk.dll', 'vosk'), ('C:\\\\Users\\\\Adam\\\\Documents\\\\Work\\\\LarbCorp\\\\NeuroCorp\\\\AI-Assistant\\\\icon.ico', '.')],
+    datas=[
+        (str(model_dir), "model/vosk-model-small-ru-0.22"),
+        (str(vosk_dll), "vosk"),
+        (str(icon_file), "assets"),
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -22,7 +35,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='main',
+    name="AI-Assistant",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -35,5 +48,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['C:\\Users\\Adam\\Documents\\Work\\LarbCorp\\NeuroCorp\\AI-Assistant\\icon.ico'],
+    icon=[str(icon_file)],
 )

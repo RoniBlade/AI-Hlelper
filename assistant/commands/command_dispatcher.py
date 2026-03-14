@@ -3,8 +3,8 @@ import json
 import re
 from typing import Any, Callable
 
-from command_processor.handlers.web import open_url
-from command_processor.handlers.apps import open_notepad, open_telegram
+from assistant.commands.handlers.web import open_url
+from assistant.commands.handlers.apps import open_notepad, open_telegram
 
 
 def norm(text: str) -> str:

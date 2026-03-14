@@ -5,20 +5,21 @@ import logging
 import os
 import sys
 import pystray
-import config as cfg
 import sounddevice as sd
 import numpy as np
 import webrtcvad
 from PIL import Image, ImageDraw
 from vosk import Model, KaldiRecognizer, SetLogLevel
-from command_processor.command_dispatcher import CommandDispatcher
-from ring_buffer import RingBuffer
-from speech_detector import SpeechDetector
+
+from assistant import config as cfg
+from assistant.audio.ring_buffer import RingBuffer
+from assistant.audio.speech_detector import SpeechDetector
+from assistant.commands.command_dispatcher import CommandDispatcher
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-
 log = logging.getLogger("main")
+SetLogLevel(-1)
 
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
@@ -29,11 +30,10 @@ model_path = os.path.join(base_path, "model", "vosk-model-small-ru-0.22")
 
 command_processor = CommandDispatcher()
 
-SetLogLevel(-1)
-
 q = queue.Queue(maxsize=cfg.QUEUE_MAXSIZE)
 transcribe_queue = queue.Queue(maxsize=cfg.QUEUE_MAXSIZE)
 
+shutdown_event = threading.Event()
 save_event = threading.Event()
 
 try:
@@ -52,7 +52,6 @@ speech_detector = SpeechDetector(
     pre_samples=cfg.PRE_SAMPLES,
 )
 
-shutdown_event = threading.Event()
 
 def transcribe_worker():
     while not shutdown_event.is_set():
@@ -77,7 +76,7 @@ def cb(indata, frames, time_info, status):
         pass
 
 def create_tray_icon():
-    icon_path = os.path.join(base_path, "icon.ico")
+    icon_path = os.path.join(base_path, "assets", "icon.ico")
     if not os.path.exists(icon_path):
         log.error(f"Icon file {icon_path} not found.")
         return

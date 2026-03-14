@@ -1,7 +1,7 @@
 from typing import Optional, List
 import numpy as np
 
-from ring_buffer import RingBuffer
+from assistant.audio.ring_buffer import RingBuffer
 
 import logging
 
@@ -51,9 +51,7 @@ class SpeechDetector:
                 phrase = np.concatenate(self.frames)
                 self.frames = []
                 self.silence_run = 0
-
                 log.info("<< END phrase")
-
                 return phrase
 
         return None
