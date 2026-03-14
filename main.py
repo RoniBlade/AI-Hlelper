@@ -10,6 +10,8 @@ import numpy as np
 import webrtcvad
 from PIL import Image, ImageDraw
 from vosk import Model, KaldiRecognizer, SetLogLevel
+import soundfile as sf
+import re
 
 from assistant import config as cfg
 from assistant.audio.ring_buffer import RingBuffer
@@ -53,6 +55,27 @@ speech_detector = SpeechDetector(
 )
 
 
+def get_path_save_sample() -> str:
+
+    AUDIO_SAMPLES_DIRECTORY = os.path.join(os.path.expanduser("~"), "Documents", "audio_samples")
+    os.makedirs(AUDIO_SAMPLES_DIRECTORY, exist_ok=True)
+    all_items = os.listdir(AUDIO_SAMPLES_DIRECTORY)
+
+    files = [f for f in all_items if os.path.isfile(os.path.join(AUDIO_SAMPLES_DIRECTORY, f))]
+
+    pattern = re.compile(r"sample_(\d+)\.wav")
+
+    numbers = []
+    for f in files:
+        m = pattern.match(f)
+        if m:
+            numbers.append(int(m.group(1)))
+
+    max_number = max(numbers) if numbers else 0
+    next_number = max_number + 1
+
+    return os.path.join(AUDIO_SAMPLES_DIRECTORY, f"sample_{next_number}.wav")
+
 def transcribe_worker():
     while not shutdown_event.is_set():
         audio_i16 = transcribe_queue.get()
@@ -62,7 +85,9 @@ def transcribe_worker():
             res = json.loads(rec_full.FinalResult())
             log.debug(f"Recognition result: {res}")
             text = (res.get("text") or "").strip()
-            command_processor.dispatch(text)
+            if command_processor.dispatch(text):
+                path_to_save = get_path_save_sample()
+                sf.write(path_to_save, audio_i16, samplerate=16000)
         except Exception:
             log.exception("ASR failed")
         finally:
