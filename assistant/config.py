@@ -39,6 +39,9 @@ TRANSCRIBE_QUEUE_MAX_SIZE = 20
 # (Если DURATION_SEC реально нигде не используется — лучше убрать)
 DURATION_SEC = 5
 
+LONG_PHRASE_DURATION = 4  # seconds
+LONG_PHRASE_FRAMES = LONG_PHRASE_DURATION * 1000 // FRAME_MS
+
 
 # Расположение аудио для которых сработало выполнение команд
 LANGUAGE = "ru"

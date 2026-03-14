@@ -33,7 +33,7 @@ model_path = os.path.join(base_path, "model", "vosk-model-small-ru-0.22")
 command_processor = CommandDispatcher()
 
 q = queue.Queue(maxsize=cfg.QUEUE_MAXSIZE)
-transcribe_queue = queue.Queue(maxsize=cfg.QUEUE_MAXSIZE)
+transcribe_queue = queue.Queue(maxsize=cfg.TRANSCRIBE_QUEUE_MAX_SIZE)
 
 shutdown_event = threading.Event()
 save_event = threading.Event()
@@ -130,7 +130,6 @@ with sd.InputStream(samplerate=cfg.SAMPLE_RATE, channels=cfg.CHANNELS, dtype=np.
             phrase_audio = speech_detector.update(frame, is_speech)
 
             if phrase_audio is not None:
-                audio_f32 = phrase_audio.astype(np.float32) / 32768.0
                 try:
                     transcribe_queue.put_nowait(phrase_audio)
                 except queue.Full:
